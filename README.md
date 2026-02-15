@@ -1,46 +1,63 @@
-# 🧩 K-Map Solver
+# K-Map Solver
 
-<p align="center">
-  <b>Modern Karnaugh Map Solver with a fully client-side Quine–McCluskey engine</b><br/>
-  Built with React + Vite + TailwindCSS
-</p>
+K-Map Solver is a client-side web application for Boolean function minimization based on Karnaugh maps and the Quine-McCluskey method.
+The application is implemented with React, TypeScript, Vite, and Tailwind CSS.
 
-<p align="center">
-  <img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
-  <img alt="React" src="https://img.shields.io/badge/React-18+-61dafb?logo=react&logoColor=white" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5+-3178c6?logo=typescript&logoColor=white" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-7+-646cff?logo=vite&logoColor=white" />
-  <img alt="TailwindCSS" src="https://img.shields.io/badge/TailwindCSS-3+-38bdf8?logo=tailwindcss&logoColor=white" />
-</p>
+## Project Goals
 
----
+- Provide an interactive tool for Karnaugh map analysis (2 to 5 variables)
+- Support both SOP (Sum of Products) and POS (Product of Sums) minimization
+- Keep all computations local in the browser (no backend dependency)
+- Offer an educational visualization of the equivalent logic circuit
 
-## ✨ Overview
+## Core Features
 
-**K-Map Solver** is a modern, interactive Karnaugh Map minimization tool built entirely in the browser.
+- Interactive Karnaugh map editing (`0`, `1`, don't-care)
+- Truth table editing in a dedicated tab with real-time synchronization
+- Quine-McCluskey minimization engine implemented in the codebase
+- Decimal canonical representation (`Σ`/`Π`) and minimized expression rendering with MathJax
+- Equivalent logic circuit visualization with input bus, orthogonal wiring, and logic gates
+- Bilingual interface (Italian/English)
 
-It implements a full **Quine–McCluskey Boolean minimization engine**, without relying on external logic libraries or backend services.
+## User Workflow
 
-> 🧠 All computations are performed client-side.  
-> 🚫 No API calls. No server dependencies.
+1. Select number of variables (`2` to `5`) and minimization form (`SOP` or `POS`)
+2. Populate values from the Karnaugh map or from the truth table tab
+3. Run minimization with `Solve`
+4. Review:
+   - canonical decimal form
+   - minimized expression
+   - equivalent logic circuit
 
----
+## User Story / Screenshot
 
-## 🚀 Features
+A screenshot is recommended for this project because the value of the application is strongly visual (map interaction, grouping, and circuit rendering).
+The standard location is:
 
-- 🔢 Support for **2 to 5 variables**
-- 🔄 Toggle between:
-  - **SOP (Sum of Products)**
-  - **POS (Product of Sums)**
-- 📊 Interactive Karnaugh Map UI
-- 🧾 Truth Table modal for fast input
-- 🧮 Mathematical rendering via **MathJax**
-- 🌍 English / Italian localization
-- 🧠 Custom Quine–McCluskey implementation
+- `docs/images/`
 
----
+Primary screenshots:
 
-## 📦 Getting Started
+```text
+docs/images/app-overview.png
+docs/images/circuit-overview.png
+```
+
+## Interface Preview
+
+![K-Map Solver Interface Overview](docs/images/app-overview.png)
+![Equivalent Logic Circuit Overview](docs/images/circuit-overview.png)
+
+## Technology Stack
+
+- React 19
+- TypeScript 5
+- Vite 7
+- Tailwind CSS 3
+- Framer Motion
+- MathJax
+
+## Local Development
 
 Clone the repository:
 
@@ -55,33 +72,26 @@ Install dependencies:
 npm install
 ```
 
-Start development server:
+Run development server:
 
 ```bash
 npm run dev
 ```
 
-Build for production:
+Build production bundle:
 
 ```bash
 npm run build
 ```
 
----
+## Repository Structure
 
-## 🗺 Roadmap
+- `src/components/` UI components (K-map, truth table, logic circuit, modals)
+- `src/lib/` minimization logic and utility modules
+- `public/` static assets and icons
+- `config/` Vite, TypeScript, Tailwind, ESLint configuration
 
-Planned improvements:
+## License
 
-- [ ] Logic gate circuit visualization (auto-generated)
-- [ ] Variable style customization (x₀, a, b, c…)
-- [ ] Export to Verilog / VHDL / JSON / Latex
-- [ ] Unit tests
-
----
-
-## 📜 License
-
-This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
-
-See the [`LICENSE`](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
+See `LICENSE` for full terms.
