@@ -1,84 +1,44 @@
 # K-Map Solver
 
-K-Map Solver is a client-side web application for Boolean function minimization based on Karnaugh maps and the Quine-McCluskey method.
-The application is implemented with React, TypeScript, Vite, and Tailwind CSS.
+<p align="left">
+  <img alt="React" src="https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646cff?logo=vite&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/TailwindCSS-3-38bdf8?logo=tailwindcss&logoColor=white" />
+  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-12-black?logo=framer&logoColor=white" />
+  <img alt="MathJax" src="https://img.shields.io/badge/MathJax-3-1f7a8c" />
+  <img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
+</p>
 
-## Project Goals
+**K-Map Solver** is a client-side web application for Boolean function minimization based on Karnaugh maps and the Quine-McCluskey method. The project is designed to provide a practical and educational workflow: edit values, minimize the function, and inspect the resulting logical structure.
 
-- Provide an interactive tool for Karnaugh map analysis (2 to 5 variables)
-- Support both SOP (Sum of Products) and POS (Product of Sums) minimization
-- Keep all computations local in the browser (no backend dependency)
-- Offer an educational visualization of the equivalent logic circuit
+The application supports **2 to 5 variables**, both **SOP** (Sum of Products) and **POS** (Product of Sums), and executes all computations directly in the browser.
 
-## Core Features
-
-- Interactive Karnaugh map editing (`0`, `1`, don't-care)
-- Truth table editing in a dedicated tab with real-time synchronization
-- Quine-McCluskey minimization engine implemented in the codebase
-- Decimal canonical representation (`Σ`/`Π`) and minimized expression rendering with MathJax
-- Equivalent logic circuit visualization with input bus, orthogonal wiring, and logic gates
-- Bilingual interface (Italian/English)
-
-## User Workflow
-
-1. Select number of variables (`2` to `5`) and minimization form (`SOP` or `POS`)
-2. Populate values from the Karnaugh map or from the truth table tab
-3. Run minimization with `Solve`
-4. Review:
-   - canonical decimal form
-   - minimized expression
-   - equivalent logic circuit
-
-## User Story / Screenshot
-
-A screenshot is recommended for this project because the value of the application is strongly visual (map interaction, grouping, and circuit rendering).
-The standard location is:
-
-- `docs/images/`
-
-Primary screenshots:
-
-```text
-docs/images/app-overview.png
-docs/images/circuit-overview.png
-```
-
-## Interface Preview
+The interface is centered on interactive map editing with synchronized truth-table input.
 
 ![K-Map Solver Interface Overview](docs/images/app-overview.png)
+
+After minimization, the tool presents the canonical decimal form (`Σ`/`Π`), the minimized symbolic expression rendered with MathJax, and the equivalent logic circuit.
+
 ![Equivalent Logic Circuit Overview](docs/images/circuit-overview.png)
-
-## Technology Stack
-
-- React 19
-- TypeScript 5
-- Vite 7
-- Tailwind CSS 3
-- Framer Motion
-- MathJax
 
 ## Local Development
 
-Clone the repository:
+Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/M4rulli/K-Map-Solver.git
 cd K-Map-Solver
-```
-
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Run development server:
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-Build production bundle:
+Build the production bundle:
 
 ```bash
 npm run build
@@ -86,12 +46,11 @@ npm run build
 
 ## Repository Structure
 
-- `src/components/` UI components (K-map, truth table, logic circuit, modals)
-- `src/lib/` minimization logic and utility modules
-- `public/` static assets and icons
-- `config/` Vite, TypeScript, Tailwind, ESLint configuration
+- `src/components/` contains UI components (K-map, truth table, logic circuit, modals).
+- `src/lib/` contains minimization and utility logic.
+- `public/` contains static assets and icons.
+- `config/` contains Vite, TypeScript, Tailwind, and ESLint configuration.
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
-See `LICENSE` for full terms.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See `LICENSE` for full terms.
