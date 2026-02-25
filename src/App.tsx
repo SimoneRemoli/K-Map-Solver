@@ -492,14 +492,17 @@ export default function KMapApp() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.18 }}
+                    className="w-full overflow-x-auto"
                   >
-                    <KmapGrid
-                      variables={numVars}
-                      minterms={gridSets.minterms}
-                      dontCares={gridSets.dontCares}
-                      groups={result?.essentials}
-                      onCellToggle={(index) => toggleCell(index)}
-                    />
+                    <div className="min-w-max flex justify-center">
+                      <KmapGrid
+                        variables={numVars}
+                        minterms={gridSets.minterms}
+                        dontCares={gridSets.dontCares}
+                        groups={result?.essentials}
+                        onCellToggle={(index) => toggleCell(index)}
+                      />
+                    </div>
                   </motion.div>
                 ) : (
                   <motion.div

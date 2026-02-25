@@ -19,7 +19,7 @@ export function KmapCell({ value, mintermIndex, onClick, className }: KmapCellPr
       whileTap={{ scale: 0.9 }}
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-center h-16 w-16 md:h-20 md:w-20 text-2xl font-mono font-bold cursor-pointer transition-all duration-200 select-none",
+        "relative flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 text-2xl font-mono font-bold cursor-pointer transition-all duration-200 select-none",
         "border border-border/50",
         value === 1 && "text-primary bg-primary/5",
         value === 0 && "text-muted-foreground/40",
