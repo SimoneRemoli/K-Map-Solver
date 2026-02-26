@@ -1,3 +1,5 @@
+import FsmCalcolatoriPane from "./components/FsmCalcolatoriPane";
+import type { FsmSolveFunction } from "./types/fsm";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "./components/ui/card";
 import { Button } from "./components/ui/button";
@@ -6,10 +8,14 @@ import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Languages, HelpCircle } from "lucide-react";
 import { solveCustom } from "./lib/solver";
-
+import CodeInput from "./components/CodeInput";
 import { HelpModal } from "./components/HelpModal";
 import { LogicCircuitDiagram } from "./components/LogicCircuitDiagram";
 import { TruthTablePane } from "./components/TruthTablePane";
+import { buildMooreForString } from "./lib/moore/buildMooreForString";
+import MoorePane from "./components/MoorePane";
+import type { MooreMachine } from "./types/moore";
+
 
 // --- Types for local solver ---
 export type SolveInput = {
@@ -93,6 +99,9 @@ function formatExpressionForMathJax(expr: string): string {
     return neg ? `\\overline{${base}}` : base;
   };
 
+
+  
+
   // POS string: (x_0 + x_1')(x_2 + x_3)...
   const factors = Array.from(s.matchAll(/\(([^()]*)\)/g));
   if (factors.length > 0) {
@@ -172,7 +181,8 @@ function buildDecimalFormTex(
   return base + dc;
 }
 
-export default function KMapApp() {
+export default function KMapApp() 
+{
   const [lang, setLang] = useState<"it" | "en">(() =>
     navigator.language.startsWith("it") ? "it" : "en"
   );
@@ -183,8 +193,40 @@ export default function KMapApp() {
   const [result, setResult] = useState<SolveOutput | null>(null);
   const [isSolving, setIsSolving] = useState(false);
   const [messageKey, setMessageKey] = useState<null | "solveFailed" | "modeChanged">(null);
-  const [activePane, setActivePane] = useState<"kmap" | "truth">("kmap");
+  const [activePane, setActivePane] = useState<"kmap" | "truth" | "fsm" | "code" | "moore">("kmap");
+  const [moore, setMoore] = useState<MooreMachine | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+
+  function handleConfirmCode(code: string) {
+  const machine = buildMooreForString(code);
+  setMoore(machine);
+  setActivePane("moore");
+}
+
+  function loadFunctionIntoKMap(fn: FsmSolveFunction) 
+  {
+  // 1) imposta numero variabili (stato+ingresso)
+  setNumVars(fn.varsCount);
+
+  // 2) costruisci la grid nel formato che usa questo progetto: Record<number, string>
+  //    con valori "0" | "1" | "-" (dont care)
+  const size = 1 << fn.varsCount;
+  const newGrid: Record<number, string> = {};
+
+  for (let i = 0; i < size; i++) newGrid[i] = "0";
+  for (const m of fn.minterms) if (m >= 0 && m < size) newGrid[m] = "1";
+  for (const d of fn.dontCares) if (d >= 0 && d < size) newGrid[d] = "-";
+
+  setGrid(newGrid);
+
+  // 3) vai sulla K-map
+  setActivePane("kmap");
+  
+
+  // 4) invalida eventuale risultato precedente
+  setResult(null);
+  setMessageKey(null);
+}
 
   const t = translations[lang];
   const messageText = messageKey
@@ -442,89 +484,134 @@ export default function KMapApp() {
           </div>
 
           {/* Work Area */}
-          <div className="flex flex-col items-center justify-center min-h-[400px] mb-8">
-            <div className="w-full max-w-5xl">
-              <div className="mx-auto mb-6 w-full max-w-xl">
-                <div className="relative grid grid-cols-2 rounded-2xl border border-border/60 bg-gradient-to-b from-background/80 to-muted/40 p-1.5 shadow-sm">
-                  <motion.div
-                    layout
-                    transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                    className={[
-                      "absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] rounded-xl",
-                      "bg-primary shadow-[0_8px_20px_-10px_hsl(var(--primary))]",
-                      activePane === "kmap" ? "left-1.5" : "left-[calc(50%+0.125rem)]",
-                    ].join(" ")}
-                  />
+<div className="flex flex-col items-center justify-center min-h-[400px] mb-8">
+  <div className="w-full max-w-5xl">
+    <div className="mx-auto mb-6 w-full max-w-xl">
+      <div className="relative grid grid-cols-3 rounded-2xl border border-border/60 bg-gradient-to-b from-background/80 to-muted/40 p-1.5 shadow-sm">
+        <motion.div
+          layout
+          transition={{ type: "spring", stiffness: 320, damping: 32 }}
+          className={[
+            "absolute top-1.5 bottom-1.5 rounded-xl",
+            "bg-primary shadow-[0_8px_20px_-10px_hsl(var(--primary))]",
+            "w-[calc(33.333%_-_0.5rem)]",
+            activePane === "kmap"
+              ? "left-1.5"
+              : activePane === "truth"
+                ? "left-[calc(33.333%_+_0.25rem)]"
+                : "left-[calc(66.666%_+_0.25rem)]",
+          ].join(" ")}
+        />
 
-                  <button
-                    type="button"
-                    onClick={() => setActivePane("kmap")}
-                    className={[
-                      "relative z-10 h-10 rounded-xl text-sm font-semibold transition-colors",
-                      activePane === "kmap"
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground",
-                    ].join(" ")}
-                  >
-                    {t.kmapTab}
-                  </button>
+        <button
+          type="button"
+          onClick={() => setActivePane("kmap")}
+          className={[
+            "relative z-10 h-10 rounded-xl text-sm font-semibold transition-colors",
+            activePane === "kmap"
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          {t.kmapTab}
+        </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setActivePane("truth")}
-                    className={[
-                      "relative z-10 h-10 rounded-xl text-sm font-semibold transition-colors",
-                      activePane === "truth"
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground",
-                    ].join(" ")}
-                  >
-                    {t.truthTab}
-                  </button>
-                </div>
-              </div>
+        <button
+          type="button"
+          onClick={() => setActivePane("truth")}
+          className={[
+            "relative z-10 h-10 rounded-xl text-sm font-semibold transition-colors",
+            activePane === "truth"
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          {t.truthTab}
+        </button>
 
-              <AnimatePresence mode="wait">
-                {activePane === "kmap" ? (
-                  <motion.div
-                    key="kmap-pane"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.18 }}
-                    className="w-full overflow-x-auto"
-                  >
-                    <div className="min-w-max flex justify-center">
-                      <KmapGrid
-                        variables={numVars}
-                        minterms={gridSets.minterms}
-                        dontCares={gridSets.dontCares}
-                        groups={result?.essentials}
-                        onCellToggle={(index) => toggleCell(index)}
-                      />
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="truth-pane"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.18 }}
-                    className="flex justify-center"
-                  >
-                    <TruthTablePane
-                      variables={numVars}
-                      minterms={gridSets.minterms}
-                      dontCares={gridSets.dontCares}
-                      onToggle={(index) => toggleCell(index)}
-                      lang={lang}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+        <button
+          type="button"
+          onClick={() => setActivePane("code")}
+          className={[
+            "relative z-10 h-10 rounded-xl text-sm font-semibold transition-colors",
+            activePane === "code"
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          Esame di Calcolatori
+        </button>
+      </div>
+    </div>
+
+    <AnimatePresence mode="wait">
+      {activePane === "kmap" && (
+        <motion.div
+          key="kmap-pane"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.18 }}
+          className="w-full overflow-x-auto"
+        >
+          <div className="min-w-max flex justify-center">
+            <KmapGrid
+              variables={numVars}
+              minterms={gridSets.minterms}
+              dontCares={gridSets.dontCares}
+              groups={result?.essentials}
+              onCellToggle={(index) => toggleCell(index)}
+            />
           </div>
+        </motion.div>
+      )}
+
+      {activePane === "truth" && (
+        <motion.div
+          key="truth-pane"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.18 }}
+          className="flex justify-center"
+        >
+          <TruthTablePane
+            variables={numVars}
+            minterms={gridSets.minterms}
+            dontCares={gridSets.dontCares}
+            onToggle={(index) => toggleCell(index)}
+            lang={lang}
+          />
+        </motion.div>
+      )}
+
+      {activePane === "code" && (
+  <motion.div
+    key="code-pane"
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
+    transition={{ duration: 0.18 }}
+    className="w-full"
+  >
+    <CodeInput onConfirm={handleConfirmCode} />
+  </motion.div>
+)}
+    {activePane === "moore" && moore && (
+  <motion.div
+    key="moore-pane"
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
+    transition={{ duration: 0.18 }}
+    className="w-full"
+  >
+    <MoorePane machine={moore} />
+  </motion.div>
+)}
+    </AnimatePresence>
+  </div>
+</div>
 
           <div className="flex justify-center gap-8 text-xs text-muted-foreground mb-6">
             <div className="flex items-center gap-2">

@@ -1,5 +1,4 @@
 // Utility functions for Karnaugh Map logic
-
 // Generate Gray codes for n bits
 export function generateGrayCodes(n: number): string[] {
   if (n <= 0) return [""];
