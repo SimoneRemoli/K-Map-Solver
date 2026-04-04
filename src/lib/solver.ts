@@ -15,8 +15,13 @@ export function solveCustom(
   variables: number,
   minterms: number[],
   dontCares: number[],
-  isSop: boolean = true
+  isSop: boolean = true,
+  variableNames?: string[]
 ): SolverResult {
+  const resolvedVariableNames = variableNames?.length === variables
+    ? variableNames
+    : Array.from({ length: variables }, (_, i) => `x_${i}`);
+
   if (!isSop) {
     const allIndices = new Set<number>();
     const total = Math.pow(2, variables);
@@ -32,14 +37,14 @@ export function solveCustom(
       return { expression: "1", essentials: [] };
     }
 
-    const solution = runQM(variables, zeros, dontCares);
+    const solution = runQM(variables, zeros, dontCares, resolvedVariableNames);
 
     return {
-      expression: formatPosFromTerms(solution.terms, variables),
+      expression: formatPosFromTerms(solution.terms, resolvedVariableNames),
       essentials: solution.groups
     };
   } else {
-    const solution = runQM(variables, minterms, dontCares);
+    const solution = runQM(variables, minterms, dontCares, resolvedVariableNames);
     return {
       expression: solution.expression,
       essentials: solution.groups
@@ -50,7 +55,8 @@ export function solveCustom(
 function runQM(
   variables: number,
   minterms: number[],
-  dontCares: number[]
+  dontCares: number[],
+  variableNames: string[]
 ): { expression: string; groups: number[][]; terms: string[] } {
   if (minterms.length === 0) return { expression: "0", groups: [], terms: [] };
   const total = Math.pow(2, variables);
@@ -183,13 +189,8 @@ function runQM(
     } else break;
   }
 
-  const varNames = Array.from(
-    { length: variables },
-    (_, i) => `x_${i}`
-  );
-
   const expression = finalPIs
-    .map(pi => formatTerm(pi.term, varNames))
+    .map(pi => formatTerm(pi.term, variableNames))
     .join(" + ");
 
   return {
@@ -225,12 +226,10 @@ function formatTerm(term: string, vars: string[]): string {
   return isAllDashes ? "1" : res;
 }
 
-function formatPosFromTerms(terms: string[], variables: number): string {
+function formatPosFromTerms(terms: string[], vars: string[]): string {
   // terms represent implicants of f' (i.e., groups of zeros of f).
   // If f' contains the all-dash implicant, then f' = 1 and f = 0.
   if (terms.some(t => /^-+$/.test(t))) return "0";
-
-  const vars = Array.from({ length: variables }, (_, i) => `x_${i}`);
 
   const factors = terms.map(term => {
     const lits: string[] = [];

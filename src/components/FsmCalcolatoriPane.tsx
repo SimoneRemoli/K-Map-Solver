@@ -79,9 +79,9 @@ export default function FsmCalcolatoriPane({ onLoadIntoKMap }: Props) {
 
   return (
     <div className="card-base">
-      <h4 className="fw-semibold mb-2">Modalità Calcolatori: FSM → eccitazioni FF → K-Map</h4>
+      <h4 className="fw-semibold mb-2">Computer Architecture Mode: FSM → FF excitations → K-Map</h4>
       <p className="text-muted mb-3">
-        Incolla la tabella stati/transizioni in bit. Genero automaticamente minterms e don’t care per D/T/J/K e z.
+        Paste the state/transition table in bits. Minterms and don’t cares for D/T/J/K and z are generated automatically.
       </p>
 
       <div className="d-flex gap-3 flex-wrap mb-3">
@@ -95,7 +95,7 @@ export default function FsmCalcolatoriPane({ onLoadIntoKMap }: Props) {
         </div>
 
         <div>
-          <label className="form-label">Bit stato (y)</label>
+          <label className="form-label">State bits (y)</label>
           <input
             className="form-control"
             type="number"
@@ -107,7 +107,7 @@ export default function FsmCalcolatoriPane({ onLoadIntoKMap }: Props) {
         </div>
 
         <div>
-          <label className="form-label">Bit ingresso (x)</label>
+          <label className="form-label">Input bits (x)</label>
           <input
             className="form-control"
             type="number"
@@ -119,7 +119,7 @@ export default function FsmCalcolatoriPane({ onLoadIntoKMap }: Props) {
         </div>
       </div>
 
-      <label className="form-label">Tabella (una riga per combinazione)</label>
+      <label className="form-label">Table (one row per combination)</label>
       <textarea
         className="form-control"
         style={{ minHeight: 220, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}
@@ -129,15 +129,15 @@ export default function FsmCalcolatoriPane({ onLoadIntoKMap }: Props) {
 
       {error && (
         <div className="alert alert-danger mt-3 mb-0">
-          <b>Errore parsing:</b> {error}
+          <b>Parsing error:</b> {error}
         </div>
       )}
 
       <hr className="my-4" />
 
-      <h5 className="fw-semibold mb-2">Funzioni generate</h5>
+      <h5 className="fw-semibold mb-2">Generated functions</h5>
       {functions.length === 0 ? (
-        <p className="text-muted">Nessuna funzione disponibile (controlla input).</p>
+        <p className="text-muted">No functions available (check the input).</p>
       ) : (
         <div className="d-flex flex-column gap-2">
           {functions.map((f) => (
@@ -149,7 +149,7 @@ export default function FsmCalcolatoriPane({ onLoadIntoKMap }: Props) {
                 </div>
               </div>
               <button className="btn btn-primary" onClick={() => onLoadIntoKMap(f)}>
-                Carica in K-Map
+                Load into K-Map
               </button>
             </div>
           ))}

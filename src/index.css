@@ -9,10 +9,10 @@
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --background: 220 30% 96%;
+  --background: 214 34% 96%;
   --foreground: 222 47% 11%;
   
-  --primary: 245 80% 60%;
+  --primary: 217 84% 56%;
   --primary-foreground: 210 40% 98%;
   
   --card: 0 0% 100%;
@@ -27,7 +27,7 @@
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
   
-  --accent: 245 50% 90%;
+  --accent: 191 60% 88%;
   --accent-foreground: 222.2 47.4% 11.2%;
   
   --destructive: 0 84.2% 60.2%;
@@ -84,7 +84,7 @@
 
 /* Custom Glassmorphism */
 .glass-panel {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
+  @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)];
 }
 
 .dark .glass-panel {
@@ -100,4 +100,41 @@
 
 .animate-pulse-ring {
   animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 24rem),
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 20rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(241, 245, 249, 0.86));
+}
+
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 6px 6px, 6px 6px;
+  background-position: -1px -1px;
+}
+
+.hero-panel {
+  @apply rounded-[1.5rem] border border-sky-200/70 bg-white/80 backdrop-blur-xl shadow-[0_18px_50px_-30px_rgba(14,116,144,0.45)];
+}
+
+.section-shell {
+  @apply rounded-[1.35rem] border border-slate-200/80 bg-white/85 p-4 md:p-5 shadow-[0_16px_40px_-28px_rgba(15,23,42,0.28)];
+}
+
+.section-title {
+  @apply text-[11px] uppercase tracking-[0.26em] text-slate-500 font-bold;
+}
+
+.technical-badge {
+  @apply inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-800;
+}
+
+.technical-note {
+  @apply rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-sm text-slate-600;
 }

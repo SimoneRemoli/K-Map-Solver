@@ -32,23 +32,45 @@ export function getGridDimensions(vars: number) {
   return { rowBits: 2, colBits: 2 };
 }
 
+function bitsToMintermIndex(bits: string): number {
+  return parseInt(bits, 2);
+}
+
 // Calculate the minterm index from grid coordinates
 export function getMintermIndex(
   rowGray: string, 
   colGray: string, 
-  mapIndex: number = 0 // For 5 vars, mapIndex 0 = E' (0), mapIndex 1 = E (1)
+  mapIndex: number = 0, // For 5 vars, mapIndex 0 = x_4' (0), mapIndex 1 = x_4 (1)
+  variables?: number
 ): number {
-  // Combine bits: Row + Col (Standard standard convention varies, but usually inputs are A,B,C,D...)
-  // We assume: 
-  // 2 vars (A, B): Row=A, Col=B
-  // 3 vars (A, B, C): Row=A, Col=BC
-  // 4 vars (A, B, C, D): Row=AB, Col=CD
-  // 5 vars (A, B, C, D, E): Row=AB, Col=CD, Map=E
-  
-  return parseInt(
-    (arguments.length > 2 && mapIndex !== undefined ? (mapIndex === 1 ? "1" : "0") : "") + rowGray + colGray, 
-    2
-  );
+  // UI convention:
+  // - columns carry the lowest-index variables shown at the top
+  // - rows carry the remaining variables shown on the left
+  // - for 5 vars the extra map selector is x_4
+  //
+  // The truth table and solver interpret x_0 as the most-significant bit,
+  // so the minterm index must be assembled in variable order:
+  // x_0 x_1 x_2 x_3 x_4.
+
+  const mapBit = mapIndex === 1 ? "1" : "0";
+
+  if ((variables ?? rowGray.length + colGray.length) === 2) {
+    // 2 vars: columns = x_0, rows = x_1
+    return bitsToMintermIndex(colGray + rowGray);
+  }
+
+  if ((variables ?? rowGray.length + colGray.length) === 3) {
+    // 3 vars: columns = x_0 x_1, rows = x_2
+    return bitsToMintermIndex(colGray + rowGray);
+  }
+
+  if ((variables ?? rowGray.length + colGray.length) === 4) {
+    // 4 vars: columns = x_0 x_1, rows = x_2 x_3
+    return bitsToMintermIndex(colGray + rowGray);
+  }
+
+  // 5 vars: columns = x_0 x_1, rows = x_2 x_3, map = x_4
+  return bitsToMintermIndex(colGray + rowGray + mapBit);
 }
 
 // Convert minterm index back to coordinates (reverse lookup)
@@ -56,17 +78,17 @@ export function getMintermIndex(
 export function getCoordinates(minterm: number, vars: number) {
   const bin = minterm.toString(2).padStart(vars, "0");
   
-  if (vars === 2) { // A, B
-    return { rowBin: bin[0], colBin: bin[1], map: 0 };
+  if (vars === 2) { // x_0 | x_1
+    return { rowBin: bin[1], colBin: bin[0], map: 0 };
   }
-  if (vars === 3) { // A, BC
-    return { rowBin: bin[0], colBin: bin.slice(1), map: 0 };
+  if (vars === 3) { // x_0 x_1 | x_2
+    return { rowBin: bin[2], colBin: bin.slice(0, 2), map: 0 };
   }
-  if (vars === 4) { // AB, CD
-    return { rowBin: bin.slice(0, 2), colBin: bin.slice(2), map: 0 };
+  if (vars === 4) { // x_0 x_1 | x_2 x_3
+    return { rowBin: bin.slice(2), colBin: bin.slice(0, 2), map: 0 };
   }
-  if (vars === 5) { // A, BC, DE
-    return { map: parseInt(bin[0]), rowBin: bin.slice(1, 3), colBin: bin.slice(3) };
+  if (vars === 5) { // x_0 x_1 | x_2 x_3 | x_4
+    return { map: parseInt(bin[4], 10), rowBin: bin.slice(2, 4), colBin: bin.slice(0, 2) };
   }
   return { rowBin: "0", colBin: "0", map: 0 };
 }

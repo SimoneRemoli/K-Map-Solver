@@ -17,6 +17,11 @@ interface KmapGridProps {
   minterms: number[];
   dontCares: number[];
   groups?: number[][];
+  variableLabels?: {
+    rows: string;
+    cols: string;
+    map?: string;
+  };
   onCellToggle: (index: number) => void;
 }
 
@@ -79,11 +84,12 @@ function matrixColsClass(colCount: number): string {
   return colCount === 2 ? "grid-cols-2" : "grid-cols-4";
 }
 
-export function KmapGrid({ variables, minterms, dontCares, groups, onCellToggle }: KmapGridProps) {
+export function KmapGrid({ variables, minterms, dontCares, groups, variableLabels, onCellToggle }: KmapGridProps) {
   const { rowBits, colBits } = getGridDimensions(variables);
   const rowCodes = generateGrayCodes(rowBits);
   const colCodes = generateGrayCodes(colBits);
-  const { rows: rowLabel, cols: colLabel, map: mapLabel } = getVariableLabels(variables);
+  const defaultLabels = getVariableLabels(variables);
+  const { rows: rowLabel, cols: colLabel, map: mapLabel } = variableLabels ?? defaultLabels;
 
   const buildGroupOverlays = (mapIndex: number): GroupRect[] => {
     if (!groups || groups.length === 0) return [];
@@ -92,7 +98,7 @@ export function KmapGrid({ variables, minterms, dontCares, groups, onCellToggle 
 
     for (let r = 0; r < rowCodes.length; r++) {
       for (let c = 0; c < colCodes.length; c++) {
-        const m = getMintermIndex(rowCodes[r], colCodes[c], mapIndex);
+        const m = getMintermIndex(rowCodes[r], colCodes[c], mapIndex, variables);
         coordByMinterm.set(m, { r, c });
       }
     }
@@ -202,7 +208,7 @@ export function KmapGrid({ variables, minterms, dontCares, groups, onCellToggle 
               {rowCodes.map((rowCode) => (
                 <Fragment key={`row-wrap-${mapIndex}-${rowCode}`}>
                   {colCodes.map((colCode) => {
-                    const mintermIndex = getMintermIndex(rowCode, colCode, mapIndex);
+                    const mintermIndex = getMintermIndex(rowCode, colCode, mapIndex, variables);
 
                     let value: 0 | 1 | 2 = 0;
                     if (minterms.includes(mintermIndex)) value = 1;

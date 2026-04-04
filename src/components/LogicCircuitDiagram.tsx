@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { buildCircuitDefinition, type CircuitDefinition, type GateType } from "../lib/logic-circuit";
+import { formatVariableTokenToMathJax } from "../lib/mathFormatting";
 
 type Lang = "it" | "en";
 
@@ -8,6 +9,7 @@ type Props = {
   variables: number;
   isSop: boolean;
   lang: Lang;
+  variableNames?: string[];
 };
 
 type GateLayout = {
@@ -223,7 +225,7 @@ function drawWire(points: Array<{ x: number; y: number }>) {
   );
 }
 
-export function LogicCircuitDiagram({ expression, variables, isSop, lang }: Props) {
+export function LogicCircuitDiagram({ expression, variables, isSop, lang, variableNames }: Props) {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth <= 820 : false
   );
@@ -240,10 +242,19 @@ export function LogicCircuitDiagram({ expression, variables, isSop, lang }: Prop
     };
   }, []);
 
-  const definition = useMemo(() => buildCircuitDefinition(expression, isSop), [expression, isSop]);
+  const definition = useMemo(
+    () => buildCircuitDefinition(expression, isSop, variableNames),
+    [expression, isSop, variableNames]
+  );
   const layout = useMemo(() => buildLayout(definition, variables, isMobile), [definition, variables, isMobile]);
   const desktopScale = 0.82;
   const renderWidth = isMobile ? layout.width : Math.round(layout.width * desktopScale);
+  const displayVariableNames = useMemo(
+    () => variableNames && variableNames.length === variables
+      ? variableNames
+      : Array.from({ length: variables }, (_, idx) => `x_${idx}`),
+    [variableNames, variables]
+  );
   const outputInputYByClause = useMemo(() => {
     if (!layout.outputGate) return new Map<number, number>();
 
@@ -332,7 +343,7 @@ export function LogicCircuitDiagram({ expression, variables, isSop, lang }: Prop
                 height={isMobile ? 24 : 30}
               >
                 <div className={isMobile ? "text-[13px] text-center leading-none font-semibold" : "text-[17px] text-center leading-none font-semibold"}>
-                  <MathText tex={`x_{${idx}}`} />
+                  <MathText tex={formatVariableTokenToMathJax(displayVariableNames[idx] ?? `x_${idx}`)} />
                 </div>
               </foreignObject>
               <line
@@ -361,7 +372,7 @@ export function LogicCircuitDiagram({ expression, variables, isSop, lang }: Prop
               )}
 
               {clause.literals.map((literal, literalIndex) => {
-                const busX = layout.busStartX + literal.variable * layout.busSpacing;
+                const busX = layout.busStartX + literal.position * layout.busSpacing;
                 const directOutputY = !clauseLayout.gate && layout.outputGate
                   ? (outputInputYByClause.get(clauseIndex) ?? layout.outputGate.inputYs[clauseIndex])
                   : null;
@@ -370,7 +381,7 @@ export function LogicCircuitDiagram({ expression, variables, isSop, lang }: Prop
                   : (directOutputY ?? clauseLayout.y);
                 const receiverGate = clauseLayout.gate ?? layout.outputGate ?? null;
                 const targetX = receiverGate ? gateInputXAtY(receiverGate, targetY) : layout.outputX - 40;
-                const tapY = layout.busYTop + 12 + literal.variable * 4;
+                const tapY = layout.busYTop + 12 + literal.position * 4;
                 const branchX = targetX - (literal.negated ? (isMobile ? 34 : 54) : (isMobile ? 20 : 36));
                 const hasIntermediateGates = layout.clauseLayouts.some((c) => c.gate !== null);
                 const isDirectToFinalGate = !clauseLayout.gate && !!layout.outputGate && hasIntermediateGates;
@@ -420,7 +431,7 @@ export function LogicCircuitDiagram({ expression, variables, isSop, lang }: Prop
 
                     {!receiverGate && (
                       <text x={targetX + 8} y={targetY + 4} fontSize={11} fill={STROKE}>
-                        {literal.negated ? `x${literal.variable}'` : `x${literal.variable}`}
+                        {literal.negated ? `${literal.variable}'` : literal.variable}
                       </text>
                     )}
                   </g>

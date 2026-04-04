@@ -1,6 +1,9 @@
 import type { MooreMachine } from "../../types/moore";
 
 export type MooreBinaryRow = {
+  symbol?: string;
+  from?: string;
+  to?: string;
   xBits: number[]; // es: [0,1] se k=2
   y: number[]; // bits stato corrente
   yNext: number[]; // bits stato successivo
@@ -45,7 +48,7 @@ export function mooreToBinaryTable(
 ): MooreBinaryTable {
   const alphabet = machine.alphabet ?? [];
   if (alphabet.length === 0) {
-    throw new Error("Alfabeto vuoto: impossibile costruire la tabella binaria.");
+    throw new Error("Empty alphabet: cannot build the binary table.");
   }
 
   // --- input bits (k) ---
@@ -59,10 +62,10 @@ export function mooreToBinaryTable(
 
   // validazione inputMap
   for (const s of alphabet) {
-    if (inputMap[s] == null) throw new Error(`Manca la codifica per il simbolo '${s}'.`);
+    if (inputMap[s] == null) throw new Error(`Missing encoding for symbol '${s}'.`);
     if (inputMap[s] < 0 || inputMap[s] >= maxInputs) {
       throw new Error(
-        `Codifica input fuori range per '${s}': ${inputMap[s]} (max=${maxInputs - 1}).`
+        `Input encoding out of range for '${s}': ${inputMap[s]} (max=${maxInputs - 1}).`
       );
     }
   }
@@ -97,6 +100,9 @@ export function mooreToBinaryTable(
       const xBits = numToBits(xCode, inputBits);
 
       rows.push({
+        symbol: sym,
+        from,
+        to,
         xBits,
         y: stateMap[from],
         yNext: stateMap[to],
@@ -116,11 +122,13 @@ export function mooreToBinaryTable(
         // input code non usato: lo segniamo come riga "don't care"
         // Coerente con la semantica "entro": qui rimango nello stesso stato (to=from)
         rows.push({
+          from,
+          to: from,
           xBits: numToBits(code, inputBits),
           y: stateMap[from],
           yNext: stateMap[from],
           z: (acceptSet.has(from) ? 1 : 0) as 0 | 1,
-          note: `input code ${code} non usato (DC)`,
+          note: `unused input code ${code} (DC)`,
         });
       }
     }
@@ -136,7 +144,7 @@ export function mooreToBinaryTable(
           y: yBits,
           yNext: yBits,
           z: 0,
-          note: "stato non usato (DC)",
+          note: "unused state (DC)",
         });
       }
     }

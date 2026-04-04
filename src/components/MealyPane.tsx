@@ -1,23 +1,20 @@
 import { useEffect, useMemo, useRef } from "react";
 import mermaid from "mermaid";
-import type { MooreMachine } from "../types/moore";
-import { mooreToMermaid } from "../lib/moore/mooreToMermaid";
-import { mooreToBinaryTable } from "../lib/moore/mooreToBinaryTable";
-import MooreKarnaughCircuitPane from "./MooreKarnaughCircuitPane"; // path giusto
+import type { MealyMachine } from "../types/mealy";
+import { mealyToMermaid } from "../lib/mealy/mealyToMermaid";
+import { mealyToBinaryTable } from "../lib/mealy/mealyToBinaryTable";
+import MooreKarnaughCircuitPane from "./MooreKarnaughCircuitPane";
 import BinaryTransitionTable from "./BinaryTransitionTable";
 
-export default function MoorePane({
+export default function MealyPane({
   machine,
   onClear,
 }: {
-  machine: MooreMachine;
+  machine: MealyMachine;
   onClear: () => void;
 }) {
-  /* =======================
-     MERMAID (grafico)
-     ======================= */
   const ref = useRef<HTMLDivElement | null>(null);
-  const diagram = useMemo(() => mooreToMermaid(machine), [machine]);
+  const diagram = useMemo(() => mealyToMermaid(machine), [machine]);
 
   useEffect(() => {
     mermaid.initialize({
@@ -29,7 +26,7 @@ export default function MoorePane({
     const el = ref.current;
     if (!el) return;
 
-    const id = `moore_${Date.now()}`;
+    const id = `mealy_${Date.now()}`;
     mermaid
       .render(id, diagram)
       .then(({ svg }) => {
@@ -40,29 +37,26 @@ export default function MoorePane({
       });
   }, [diagram]);
 
-  /* =======================
-     Tabella binaria (multi-simbolo)
-     ======================= */
   const table = useMemo(
     () =>
-      mooreToBinaryTable(machine, {
+      mealyToBinaryTable(machine, {
         includeUnusedStates: true,
-        // includeUnusedInputs: true, // se vuoi anche codici input non usati
       }),
     [machine]
   );
+
   return (
     <div className="space-y-6">
       <div className="section-shell">
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="section-title">Automaton Graph</div>
-            <h5 className="mt-2 text-xl font-display font-bold text-slate-900">Moore recognizer</h5>
+            <h5 className="mt-2 text-xl font-display font-bold text-slate-900">Mealy recognizer</h5>
             <p className="mt-1 text-sm text-slate-600">
-              State-based recognizer with graph rendering, binary transitions and derived sequential logic.
+              Transition-based recognizer with graph rendering, binary transitions and derived sequential logic.
             </p>
           </div>
-          <div className="technical-badge">Moore Model</div>
+          <div className="technical-badge">Mealy Model</div>
         </div>
 
         <div

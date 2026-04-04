@@ -1,73 +1,132 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import type { MooreBinaryTable } from "../lib/moore/mooreToBinaryTable";
-import { buildKmapSetsFromBinaryTable, type OutputKey } from "../lib/moore/mooreToKmapSets";
+import { formatExpressionForMathJax } from "../lib/mathFormatting";
+import {
+  buildKmapSetsFromBinaryTable,
+  describeOutputKey,
+  formatOutputKey,
+  getKmapLabelsForBinaryTable,
+  getOrderedVariableNamesForBinaryTable,
+  getOutputKeysForTable,
+} from "../lib/moore/mooreToKmapSets";
 import { solveCustom } from "../lib/solver";
 import { KmapGrid } from "./KmapGrid";
 import { LogicCircuitDiagram } from "./LogicCircuitDiagram";
+import SequentialMachineDiagram from "./SequentialMachineDiagram";
 
 type Lang = "it" | "en";
 
+function MathText({ tex }: { tex: string }) {
+  useEffect(() => {
+    if (window.MathJax) {
+      window.MathJax.typesetPromise?.();
+    }
+  }, [tex]);
+
+  return <span className="math-jax">{"\\(" + tex + "\\)"}</span>;
+}
+
 export default function MooreKarnaughCircuitPane({
   table,
-  lang = "it",
+  lang = "en",
 }: {
   table: MooreBinaryTable;
   lang?: Lang;
 }) {
-  const [out, setOut] = useState<OutputKey>("y1p");
-
-  const sets = useMemo(() => buildKmapSetsFromBinaryTable(table, out), [table, out]);
-
-  // qui puoi mettere anche un toggle SOP/POS se vuoi, ma per l’esame di calcolatori di solito SOP
   const isSop = true;
-
-  const solved = useMemo(
-    () => solveCustom(sets.variables, sets.minterms, sets.dontCares, isSop),
-    [sets.variables, sets.minterms, sets.dontCares, isSop]
+  const variableLabels = useMemo(() => getKmapLabelsForBinaryTable(table), [table]);
+  const variableNames = useMemo(() => getOrderedVariableNamesForBinaryTable(table), [table]);
+  const inputVariableNames = useMemo(
+    () => Array.from({ length: table.inputBits }, (_, i) => `x_${table.inputBits - i}`),
+    [table.inputBits]
   );
+  const stateVariableNames = useMemo(
+    () => Array.from({ length: table.bits }, (_, i) => `y_${table.bits - i}`),
+    [table.bits]
+  );
+  const outputs = useMemo(() => {
+      return getOutputKeysForTable(table).map((out) => {
+      const sets = buildKmapSetsFromBinaryTable(table, out);
+      const solved = solveCustom(sets.variables, sets.minterms, sets.dontCares, isSop, variableNames);
 
-  const title =
-    out === "z" ? "Z" : out === "y1p" ? "y1'" : out === "y2p" ? "y2'" : "y3'";
+      return {
+        out,
+        title: formatOutputKey(out),
+        description: describeOutputKey(out, table),
+        sets,
+        solved,
+      };
+    });
+  }, [table, isSop, variableNames]);
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
-          {lang === "it" ? "Uscita" : "Output"}
+      <div className="mb-5">
+        <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">
+          {lang === "it" ? "Karnaugh maps and simplifications" : "Karnaugh maps and simplifications"}
         </div>
-
-        <select
-          value={out}
-          onChange={(e) => setOut(e.target.value as OutputKey)}
-          className="h-10 px-3 rounded-lg border border-border bg-background/50"
-        >
-          <option value="y1p">y1'</option>
-          <option value="y2p">y2'</option>
-          <option value="y3p">y3'</option>
-          <option value="z">Z</option>
-        </select>
-
-        <div className="ml-auto font-mono text-sm">
-          {title} = <span className="font-semibold">{solved.expression}</span>
+        <div className="text-sm text-muted-foreground">
+          {lang === "it"
+            ? "For each output, the corresponding K-map is built using input and state variables, then the simplified Boolean function is computed."
+            : "For each output, the corresponding K-map is built using input and state variables, then the simplified Boolean function is computed."}
         </div>
       </div>
 
-      <div className="flex justify-center overflow-x-auto">
-        <KmapGrid
-          variables={sets.variables}
-          minterms={sets.minterms}
-          dontCares={sets.dontCares}
-          groups={solved.essentials}
-          onCellToggle={() => {
-            // NON editabile: deriva dalla tabella delle transizioni
-          }}
-        />
+      <div className="space-y-8">
+        {outputs.map(({ out, title, description, sets, solved }) => (
+          <div
+            key={out.kind === "z" ? "z" : `y${out.bitIndexFromLSB + 1}p`}
+            className="rounded-2xl border border-border/60 bg-card/70 shadow-lg overflow-hidden"
+          >
+            <div className="border-b border-border/60 bg-muted/25 px-4 py-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-semibold">
+                  {title}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {lang === "it" ? "Simplified expression" : "Simplified expression"}:
+                </div>
+                <div className="text-sm font-semibold text-foreground overflow-x-auto">
+                  <MathText tex={`${title} = ${formatExpressionForMathJax(solved.expression)}`} />
+                </div>
+              </div>
+              <div className="mt-2 text-sm text-muted-foreground">
+                {lang === "it" ? "Represented function" : "Represented function"}: {description}
+                {" · "}
+                {lang === "it" ? "Minterms" : "Minterms"}: Σ({sets.minterms.join(", ") || "∅"})
+              </div>
+            </div>
+
+            <div className="p-4 md:p-5">
+              <div className="flex justify-center overflow-x-auto mb-6">
+                <KmapGrid
+                  variables={sets.variables}
+                  minterms={sets.minterms}
+                  dontCares={sets.dontCares}
+                  groups={solved.essentials}
+                  variableLabels={variableLabels}
+                  onCellToggle={() => {
+                    // NON editabile: deriva dalla tabella delle transizioni
+                  }}
+                />
+              </div>
+
+              <LogicCircuitDiagram
+                expression={solved.expression}
+                variables={sets.variables}
+                isSop={isSop}
+                lang={lang}
+                variableNames={variableNames}
+              />
+            </div>
+          </div>
+        ))}
       </div>
 
-      <LogicCircuitDiagram
-        expression={solved.expression}
-        variables={sets.variables}
-        isSop={isSop}
+      <SequentialMachineDiagram
+        inputVariableNames={inputVariableNames}
+        stateVariableNames={stateVariableNames}
+        outputs={outputs.map(({ title, solved }) => ({ name: title, expression: solved.expression }))}
         lang={lang}
       />
     </div>

@@ -22,12 +22,49 @@ After minimization, the tool presents the canonical decimal form (`Σ`/`Π`), th
 
 ![Equivalent Logic Circuit Overview](docs/images/circuit-overview.png)
 
+## How It Works
+
+This project has two main educational workflows.
+
+### 1. Karnaugh Map Solver
+
+In the standard solver mode, you can:
+
+- choose from 2 to 5 variables
+- fill the Karnaugh map or the truth table
+- work in **SOP/FND** or **POS/FNC**
+- compute the minimized Boolean expression
+- inspect the equivalent logic circuit generated from the simplified function
+
+The minimization logic is executed client-side and combines Karnaugh-map visualization with the Quine-McCluskey simplification process.
+
+### 2. Esame di Calcolatori
+
+In the `Esame di Calcolatori` section, the app builds a sequential machine that recognizes an input string.
+
+Starting from a target word, the system:
+
+- builds the recognizer automaton as **Moore** or **Mealy**
+- supports **overlapping matches**
+- generates the state and transition table with binary state encoding
+- derives the next-state and output functions (`y'` and `z`)
+- creates a Karnaugh map for each output function
+- simplifies every Boolean function
+- draws both the combinational circuits and the complete sequential machine with D flip-flops and feedback lines
+
+This makes the project useful not only for minimization exercises, but also for sequential-network design and computer architecture exam preparation.
+
+## Author
+
+Project extended and documented by **Simone Remoli**.  
+GitHub: https://github.com/SimoneRemoli
+
 ## Local Development
 
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/M4rulli/K-Map-Solver.git
+git clone https://github.com/SimoneRemoli/K-Map-Solver.git
 cd K-Map-Solver
 npm install
 ```

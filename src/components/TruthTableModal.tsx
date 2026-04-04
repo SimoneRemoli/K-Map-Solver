@@ -43,7 +43,7 @@ export function TruthTableModal({
   minterms,
   dontCares,
   onApply,
-  lang = "it",
+  lang = "en",
   title,
 }: TruthTableModalProps) {
   const size = pow2(variables);
@@ -69,15 +69,15 @@ export function TruthTableModal({
 
   const t = {
     it: {
-      heading: title ?? "Tabella di verità",
-      subtitle: "Clicca la colonna f per ciclare: 0 → 1 → x → 0",
-      clear: "Pulisci",
-      cancel: "Annulla",
+      heading: title ?? "Truth table",
+      subtitle: "Click the f column to cycle: 0 → 1 → x → 0",
+      clear: "Clear",
+      cancel: "Cancel",
       ok: "OK",
       index: "#",
       f: "f",
-      sigma: "Forma decimale (mintermini)",
-      pi: "Forma decimale (maxtermini)",
+      sigma: "Decimal form (minterms)",
+      pi: "Decimal form (maxterms)",
     },
     en: {
       heading: title ?? "Truth table",
