@@ -78,7 +78,7 @@ export default function MooreKarnaughCircuitPane({
             key={out.kind === "z" ? "z" : `y${out.bitIndexFromLSB + 1}p`}
             className="rounded-2xl border border-border/60 bg-card/70 shadow-lg overflow-hidden"
           >
-            <div className="border-b border-border/60 bg-muted/25 px-4 py-4">
+            <div className="border-b border-border/60 bg-muted/25 px-3 py-3 sm:px-4 sm:py-4">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-semibold">
                   {title}
@@ -97,8 +97,9 @@ export default function MooreKarnaughCircuitPane({
               </div>
             </div>
 
-            <div className="p-4 md:p-5">
-              <div className="flex justify-center overflow-x-auto mb-6">
+            <div className="p-2.5 sm:p-4 md:p-5">
+              <div className="mb-5 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
+                <div className="flex min-w-fit justify-center">
                 <KmapGrid
                   variables={sets.variables}
                   minterms={sets.minterms}
@@ -109,6 +110,7 @@ export default function MooreKarnaughCircuitPane({
                     // NON editabile: deriva dalla tabella delle transizioni
                   }}
                 />
+                </div>
               </div>
 
               <LogicCircuitDiagram

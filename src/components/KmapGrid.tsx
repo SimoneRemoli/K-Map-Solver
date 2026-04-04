@@ -144,17 +144,20 @@ export function KmapGrid({ variables, minterms, dontCares, groups, variableLabel
 
   const renderGrid = (mapIndex: number = 0) => {
     const groupRects = buildGroupOverlays(mapIndex);
+    const headerCellSize = "h-11 w-11 sm:h-14 sm:w-14 md:h-16 md:w-16";
+    const cornerCellSize = "h-11 w-11 sm:h-14 sm:w-14 md:h-16 md:w-16";
+    const labelTextSize = "text-[11px] sm:text-[13px] md:text-[14px]";
 
     return (
-      <div className="relative inline-block bg-card rounded-xl shadow-lg border border-border p-2 sm:p-4">
+      <div className="relative inline-block min-w-fit bg-card rounded-xl shadow-lg border border-border p-1.5 sm:p-3 md:p-4">
         {variables === 5 && (
-          <div className="absolute -top-8 left-0 right-0 text-center font-bold text-lg text-foreground/80">
+          <div className="absolute -top-7 left-0 right-0 text-center font-bold text-sm sm:text-base md:text-lg text-foreground/80">
             <MJ tex={`${mapLabel} = ${mapIndex}`} />
           </div>
         )}
 
         <div className="flex">
-          <div className="relative border-r border-b border-border/50 h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 bg-muted/10 shrink-0">
+          <div className={cn("relative border-r border-b border-border/50 bg-muted/10 shrink-0", cornerCellSize)}>
             <div
               className="absolute left-1/2 top-1/2 h-px w-[140%] bg-border/60"
               style={{ transform: "translate(-50%, -50%) rotate(45deg)" }}
@@ -164,7 +167,7 @@ export function KmapGrid({ variables, minterms, dontCares, groups, variableLabel
               className="absolute left-1/2 top-1/2"
               style={{ transform: "translate(-50%, -50%) rotate(45deg) translateX(-10px) translateY(-12px)" }}
             >
-              <div className="text-[14px] font-bold text-muted-foreground tracking-tight whitespace-nowrap">
+              <div className={cn(labelTextSize, "font-bold text-muted-foreground tracking-tight whitespace-nowrap")}>
                 <MJ tex={colLabel} />
               </div>
             </div>
@@ -173,7 +176,7 @@ export function KmapGrid({ variables, minterms, dontCares, groups, variableLabel
               className="absolute left-1/2 top-1/2"
               style={{ transform: "translate(-50%, -50%) rotate(45deg) translateX(-10px) translateY(5px)" }}
             >
-              <div className="text-[14px] font-bold text-muted-foreground tracking-tight whitespace-nowrap">
+              <div className={cn(labelTextSize, "font-bold text-muted-foreground tracking-tight whitespace-nowrap")}>
                 <MJ tex={rowLabel} />
               </div>
             </div>
@@ -183,7 +186,10 @@ export function KmapGrid({ variables, minterms, dontCares, groups, variableLabel
             {colCodes.map((code) => (
               <div
                 key={`col-${mapIndex}-${code}`}
-                className="flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 font-mono text-sm text-muted-foreground font-medium border-b border-border/50 bg-muted/20"
+                className={cn(
+                  "flex items-center justify-center font-mono text-[11px] sm:text-sm text-muted-foreground font-medium border-b border-border/50 bg-muted/20",
+                  headerCellSize
+                )}
               >
                 {code}
               </div>
@@ -196,7 +202,10 @@ export function KmapGrid({ variables, minterms, dontCares, groups, variableLabel
             {rowCodes.map((rowCode) => (
               <div
                 key={`row-${mapIndex}-${rowCode}`}
-                className="flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 font-mono text-sm text-muted-foreground font-medium border-r border-border/50 bg-muted/20"
+                className={cn(
+                  "flex items-center justify-center font-mono text-[11px] sm:text-sm text-muted-foreground font-medium border-r border-border/50 bg-muted/20",
+                  headerCellSize
+                )}
               >
                 {rowCode}
               </div>
@@ -268,7 +277,7 @@ export function KmapGrid({ variables, minterms, dontCares, groups, variableLabel
   return (
     <div
       className={cn(
-        "flex flex-col xl:flex-row items-center justify-center gap-12 p-4",
+        "flex flex-col xl:flex-row items-start sm:items-center justify-center gap-6 sm:gap-10 p-2 sm:p-4",
         variables === 5 ? "mt-8" : ""
       )}
     >
