@@ -78,6 +78,14 @@ This repository is meant to be both practical and didactic:
 - **MathJax**
 - **Mermaid**
 
+## Mobile Version
+
+The project also includes a mobile application package built for **Android only**.
+
+An APK version has been prepared as a lightweight Android WebView wrapper around the deployed application, allowing the project to be used directly on mobile devices while preserving the same online experience.
+
+At the moment, the mobile package is available **exclusively for Android**.
+
 ## Project Structure
 
 - `src/components/` contains UI components and visual panels
