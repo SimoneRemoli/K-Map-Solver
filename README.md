@@ -10,54 +10,82 @@
   <img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
 </p>
 
-**K-Map Solver** is a client-side web application for Boolean function minimization based on Karnaugh maps and the Quine-McCluskey method. The project is designed to provide a practical and educational workflow: edit values, minimize the function, and inspect the resulting logical structure.
+An educational web application for Boolean minimization and sequential-machine design.
 
-The application supports **2 to 5 variables**, both **SOP** (Sum of Products) and **POS** (Product of Sums), and executes all computations directly in the browser.
+K-Map Solver combines an interactive Karnaugh-map workflow with automatic logic simplification, circuit visualization, and a recognizer-automaton section for Moore and Mealy machines. The goal is to provide a clean academic tool for studying digital logic, computer architecture, and sequential networks in a single interface.
 
-The interface is centered on interactive map editing with synchronized truth-table input.
+## Overview
+
+The project currently offers two main workflows:
+
+- **Karnaugh Map Solver** for 2 to 5 variables
+- **Recognizer Automaton** generation from an input string
+
+The application is fully client-side and focuses on clarity, visual feedback, and educational value.
 
 ![K-Map Solver Interface Overview](docs/images/app-overview.png)
 
-After minimization, the tool presents the canonical decimal form (`Σ`/`Π`), the minimized symbolic expression rendered with MathJax, and the equivalent logic circuit.
+After simplification, the app displays canonical forms, simplified expressions, Karnaugh groupings, and logic circuits.
 
 ![Equivalent Logic Circuit Overview](docs/images/circuit-overview.png)
 
-## How It Works
+## Main Features
 
-This project has two main educational workflows.
+- Interactive Karnaugh-map editing
+- Truth-table based editing and synchronization
+- SOP and POS simplification
+- Client-side Boolean minimization with Quine-McCluskey
+- MathJax rendering for symbolic expressions
+- Logic-circuit generation from simplified formulas
+- Moore and Mealy recognizer automata generation
+- Binary state/transition tables
+- Karnaugh maps for next-state and output functions
+- Complete sequential-machine diagrams with D flip-flops and feedback lines
+- Support for overlapping string recognition
 
-### 1. Karnaugh Map Solver
+## Recognizer Automaton Workflow
 
-In the standard solver mode, you can:
+The `Recognizer Automaton` section turns a target word into a sequential machine that recognizes the pattern.
 
-- choose from 2 to 5 variables
-- fill the Karnaugh map or the truth table
-- work in **SOP/FND** or **POS/FNC**
-- compute the minimized Boolean expression
-- inspect the equivalent logic circuit generated from the simplified function
+From a single input string, the application can:
 
-The minimization logic is executed client-side and combines Karnaugh-map visualization with the Quine-McCluskey simplification process.
+- build the automaton as **Moore** or **Mealy**
+- encode states in binary
+- generate the state and transition table
+- derive each next-state output `y'` and the external output `z`
+- construct the related Karnaugh map for every output
+- simplify each Boolean function
+- draw both the combinational logic and the complete sequential circuit
 
-### 2. Esame di Calcolatori
+This makes the project useful not only for Karnaugh-map exercises, but also for exam-oriented sequential-machine design.
 
-In the `Esame di Calcolatori` section, the app builds a sequential machine that recognizes an input string.
+## Why This Project
 
-Starting from a target word, the system:
+This repository is meant to be both practical and didactic:
 
-- builds the recognizer automaton as **Moore** or **Mealy**
-- supports **overlapping matches**
-- generates the state and transition table with binary state encoding
-- derives the next-state and output functions (`y'` and `z`)
-- creates a Karnaugh map for each output function
-- simplifies every Boolean function
-- draws both the combinational circuits and the complete sequential machine with D flip-flops and feedback lines
+- it helps students move from truth tables to simplified logic quickly
+- it shows how symbolic simplification maps to real circuits
+- it connects automata theory with sequential hardware design
+- it provides visual outputs that are useful for study, demos, and documentation
 
-This makes the project useful not only for minimization exercises, but also for sequential-network design and computer architecture exam preparation.
+## Technology Stack
 
-## Author
+- **React 19**
+- **TypeScript**
+- **Vite**
+- **Tailwind CSS**
+- **Framer Motion**
+- **MathJax**
+- **Mermaid**
 
-Project extended and documented by **Simone Remoli**.  
-GitHub: https://github.com/SimoneRemoli
+## Project Structure
+
+- `src/components/` contains UI components and visual panels
+- `src/lib/` contains minimization, automata, Karnaugh, and circuit logic
+- `src/types/` contains shared TypeScript types
+- `public/` contains static assets
+- `config/` contains Vite and project configuration
+- `docs/images/` contains README screenshots
 
 ## Local Development
 
@@ -75,19 +103,26 @@ Run the development server:
 npm run dev
 ```
 
-Build the production bundle:
+Build the project:
 
 ```bash
 npm run build
 ```
 
-## Repository Structure
+## Credits
 
-- `src/components/` contains UI components (K-map, truth table, logic circuit, modals).
-- `src/lib/` contains minimization and utility logic.
-- `public/` contains static assets and icons.
-- `config/` contains Vite, TypeScript, Tailwind, and ESLint configuration.
+The basic algorithmic foundation originates from **Marco Marulli**.  
+This repository extends that work with a later development focused on interface design, recognizer automata, Karnaugh-map generation for sequential outputs, and full sequential-circuit visualization.
+
+Development and project extension by **Simone Remoli**.  
+GitHub: https://github.com/SimoneRemoli
+
+## Academic Reference
+
+**Tor Vergata University, Faculty of Engineering**  
+https://inginformatica.uniroma2.it/
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See `LICENSE` for full terms.
+This project is released under the **GNU General Public License v3.0 (GPL-3.0)**.  
+See `LICENSE` for the full license text.
